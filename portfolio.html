@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Monto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        /* Nawigacja */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+            color: #1a1a1a;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 3rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1a1a1a;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #666666;
+        }
+
+        /* Sekcja */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 80px auto 0;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 3rem;
+            text-align: center;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #1a1a1a;
+            margin-top: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .portfolio-item {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            aspect-ratio: 16/9;
+            position: relative;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .portfolio-video-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #000;
+        }
+
+        .portfolio-video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .portfolio-item-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            color: #ffffff;
+            z-index: 2;
+            transition: background 0.3s ease;
+        }
+
+        .portfolio-item:hover .portfolio-item-overlay {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .portfolio-item-overlay::before {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-item:hover .portfolio-item-overlay::before {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        .portfolio-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        .portfolio-category {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Modal Video */
+        .video-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .modal-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+        }
+
+        .modal-video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: -50px;
+            top: -50px;
+            color: #fff;
+            font-size: 2.5rem;
+            cursor: pointer;
+            z-index: 2001;
+            background: none;
+            border: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-close:hover {
+            opacity: 0.7;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-close {
+                right: 10px;
+                top: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            section {
+                margin-top: 60px;
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Nawigacja -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Monto</a>
+            <ul class="nav-links">
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="uslugi.html">Usługi</a></li>
+                <li><a href="kontakt.html">Kontakt</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Portfolio Section -->
+    <section>
+        <h2 class="section-title fade-in">Nasze Projekty</h2>
+        <div class="portfolio-grid">
+            <!-- Projekt 1 -->
+            <div class="portfolio-item fade-in" onclick="openVideoModal('https://www.youtube.com/embed/jNQXAC9IVRw?controls=1')">
+                <div class="portfolio-video-container">
+                    <iframe src="https://www.youtube.com/embed/jNQXAC9IVRw?controls=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+                </div>
+                <div class="portfolio-item-overlay">
+                    <div class="portfolio-title">wypełnij</div>
+                    <div class="portfolio-category">wypełnij</div>
+                </div>
+            </div>
+
+            <!-- Projekt 2 -->
+            <div class="portfolio-item fade-in" onclick="openVideoModal('https://www.youtube.com/embed/ZZ5LpwO-An4?controls=1')">
+                <div class="portfolio-video-container">
+                    <iframe src="https://www.youtube.com/embed/ZZ5LpwO-An4?controls=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+                </div>
+                <div class="portfolio-item-overlay">
+                    <div class="portfolio-title">wypełnij</div>
+                    <div class="portfolio-category">wypełnij</div>
+                </div>
+            </div>
+
+            <!-- Projekt 3 -->
+            <div class="portfolio-item fade-in" onclick="openVideoModal('https://www.youtube.com/embed/5t3eBDy2bjI?controls=1')">
+                <div class="portfolio-video-container">
+                    <iframe src="https://www.youtube.com/embed/5t3eBDy2bjI?controls=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+                </div>
+                <div class="portfolio-item-overlay">
+                    <div class="portfolio-title">wypełnij</div>
+                    <div class="portfolio-category">wypełnij</div>
+                </div>
+            </div>
+
+            <!-- Projekt 4 -->
+            <div class="portfolio-item fade-in" onclick="openVideoModal('https://www.youtube.com/embed/aqz-KE-bpKQ?controls=1')">
+                <div class="portfolio-video-container">
+                    <iframe src="https://www.youtube.com/embed/aqz-KE-bpKQ?controls=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+                </div>
+                <div class="portfolio-item-overlay">
+                    <div class="portfolio-title">wypełnij</div>
+                    <div class="portfolio-category">wypełnij</div>
+                </div>
+            </div>
+
+            <!-- Projekt 5 -->
+            <div class="portfolio-item fade-in" onclick="openVideoModal('https://www.youtube.com/embed/9bZkp7q19f0?controls=1')">
+                <div class="portfolio-video-container">
+                    <iframe src="https://www.youtube.com/embed/9bZkp7q19f0?controls=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+                </div>
+                <div class="portfolio-item-overlay">
+                    <div class="portfolio-title">wypełnij</div>
+                    <div class="portfolio-category">wypełnij</div>
+                </div>
+            </div>
+
+            <!-- Projekt 6 -->
+            <div class="portfolio-item fade-in" onclick="openVideoModal('https://www.youtube.com/embed/dQw4w9WgXcQ?controls=1')">
+                <div class="portfolio-video-container">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?controls=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+                </div>
+                <div class="portfolio-item-overlay">
+                    <div class="portfolio-title">wypełnij</div>
+                    <div class="portfolio-category">wypełnij</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Video -->
+    <div class="video-modal" id="videoModal">
+        <button class="modal-close" onclick="closeVideoModal()">&times;</button>
+        <div class="modal-video-container">
+            <iframe id="modalVideo" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="portfolio.html">Portfolio</a>
+                <a href="uslugi.html">Usługi</a>
+                <a href="kontakt.html">Kontakt</a>
+                <a href="https://www.instagram.com/alan.kolarzyk/">Instagram (Montaż)</a>
+                <a href="https://www.instagram.com/zawieruchawojtek1/">Instagram (Montaż Oraz Strony)</a>
+                <a href="https://www.youtube.com/@Wojtek_Zawierucha">YouTube</a>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Monto. Wszystkie prawa zastrzeżone.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Otwórz modal z video
+        function openVideoModal(videoUrl) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('modalVideo');
+            iframe.src = videoUrl;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Zamknij modal
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('modalVideo');
+            modal.classList.remove('active');
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Zamknij modal na klik poza video
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVideoModal();
+            }
+        });
+
+        // Zamknij modal na ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideoModal();
+            }
+        });
+    </script>
+</body>
+</html>
